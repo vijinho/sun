@@ -1,0 +1,8 @@
+*.DS_Store
+*.bak
+*.swp
+*.tmp
+*~
+.DS_Store
+*.json
+composer.lock
