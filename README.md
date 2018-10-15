@@ -1,4 +1,4 @@
-# sun - A command-line php for calculating sun position, sunlight phases (times for sunrise, sunset, dusk, etc.)
+# sun - A command-line php/www rest tool for calculating sun position, sunlight phases (times for sunrise, sunset, dusk, etc.)
 
 CLI script `sun.php` instantiates class [gregseth/suncalc-php](https://github.com/gregseth/suncalc-php) and echoes JSON if successful
 
