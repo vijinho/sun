@@ -13,6 +13,7 @@ The script can also be run as a web-service with PHP's in-built webserver for te
 - When calling with a city-id, adds the city information to the 'meta' information returned in the JSON result
 - Option to search for city information with --search-city
 - All messages when running with `--debug` or `--verbose` are to *stderr* to avoid interference with *stdout*
+- Specify date-format using [php date()](https://secure.php.net/manual/en/function.date.php)
 - Can output the result if successful to *stdout*
 - Errors are output in JSON as 'errors' with just a bunch of strings
 
@@ -66,6 +67,7 @@ Get the sun phase data using class https://github.com/gregseth/suncalc-php
              --dir=                   (Optional) Directory for storing files (sys_get_temp_dir() if not specified)
         -f,  --filename={output.}     (Optional) Filename for output data from operation
              --format={json}          (Optional) Output format for output filename (reserved for future): json (default)
+             --date-format={U}        (Optional) Format to output, using date(), default unixtime, see: https://secure.php.net/manual/en/function.date.php             
 ```
 
 ### Requirements/Installation

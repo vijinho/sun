@@ -28,29 +28,29 @@ class MySunCalc extends SunCalc
      * return the values as a array
      * method allows outputting values as an array
      *
-     * @param string format format for date/time, default unixtime
+     * @param string date_format format to date()
      * @param replace_keys replace key names
      * @return array sun phase information
      * @link http://php.net/manual/en/language.oop5.magic.php#object.tostring
      */
-    public function toArray($format = 'U', $replace_keys = []): array
+    public function toArray($date_format = 'U', $replace_keys = []): array
     {
         $data = [];
         $suntimes = $this->getSunTimes();
         // use my replacement key names
         if (empty($replace_keys)) {
             $replace_keys = [
-                'sunrise' => 'sunrise_start',
-                'sunriseEnd' => 'sunrise_end',
                 'nauticalDawn' => 'dawn_nautical',
                 'dawn' => 'dawn',
+                'sunrise' => 'sunrise_start',
+                'sunriseEnd' => 'sunrise_end',
                 'goldenHourEnd' => 'golden_hour_morning',
                 'solarNoon' => 'noon',
                 'goldenHour' => 'golden_hour_evening',
-                'dusk' => 'dusk',
-                'nauticalDusk' => 'dusk_nautical',
                 'sunsetStart' => 'sunset_start',
                 'sunset' => 'sunset_end',
+                'dusk' => 'dusk',
+                'nauticalDusk' => 'dusk_nautical',
                 'night' => 'night',
                 'nadir' => 'nadir',
                 'nightEnd' => 'night_end',
@@ -58,7 +58,7 @@ class MySunCalc extends SunCalc
         }
 
         foreach ($suntimes as $key => $dateObject) {
-            $data[$replace_keys[$key]] = $dateObject->format('U');
+            $data[$replace_keys[$key]] = $dateObject->format($date_format);
         }
 
         return array_replace(array_flip($replace_keys), $data);
@@ -81,12 +81,13 @@ class MySunCalc extends SunCalc
      * return the values as a string
      * method allows outputting values as a string
      *
+     * @param string date_format format to date()
      * @return string json_encode()
      * @link http://php.net/manual/en/language.oop5.magic.php#object.tostring
      */
     public function toJSON(): string
     {
-        return json_encode(to_charset($this->toArray()), JSON_PRETTY_PRINT);
+        return json_encode(to_charset($this->toArray(), $date_format = 'U'), JSON_PRETTY_PRINT);
     }
 
 
@@ -115,7 +116,7 @@ switch (php_sapi_name()) {
     case 'cli-server': // run as web-service
         define('DEBUG', 0);
         $params    = [
-            'date', 'latitude', 'longitude', 'city-id', 'cities', 'refresh'
+            'date', 'date-format', 'latitude', 'longitude', 'city-id', 'cities', 'refresh'
         ];
 
         // filter input variables
@@ -158,7 +159,7 @@ switch (php_sapi_name()) {
 // : - required, :: - optional
 
 $options = getopt("hvdrt:", [
-    'help', 'verbose', 'debug', 'test', 'date:', 'echo',
+    'help', 'verbose', 'debug', 'test', 'date:', 'date-format:', 'echo',
     'dir:', 'filename:', 'filename:', 'refresh',
     'latitude:', 'longitude:', 'cities', 'city-id:', 'search-city:',
 ]);
@@ -248,8 +249,15 @@ if (array_key_exists('h', $options) || array_key_exists('help', $options)) {
 //-----------------------------------------------------------------------------
 // initialise variables
 
+//-----------------------------------------------------------------------------
+// initialise variables
+
 $errors = []; // errors to be output if a problem occurred
 $output = []; // data to be output at the end
+
+//-----------------------------------------------------------------------------
+// output format
+
 $format = '';
 if (!empty($options['format'])) {
     $format = $options['format'];
@@ -398,11 +406,23 @@ if (empty($date)) {
 $dateObject = new DateTime(date('Y-m-d H:i:s', $date));
 
 //-----------------------------------------------------------------------------
+// date format
+
+$date_format = 'U';
+if (!empty($options['date-format'])) {
+    $date_format = $options['date-format'];
+    if (false === date($date_format)) {
+        $errors[] = "Invalid date format: $date_format";
+        goto errors;
+    }
+}
+
+//-----------------------------------------------------------------------------
 // MAIN
 // set up request params for sg_point_request($request_params)
 
 $sun = new MySunCalc($dateObject, $latitude, $longitude);
-$data = $sun->toArray();
+$data = $sun->toArray($date_format);
 $data['timestamp'] = $date;
 $data['datestamp'] = date('r', $date);
 if (!empty($city)) {
