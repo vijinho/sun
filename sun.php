@@ -116,7 +116,7 @@ switch (php_sapi_name()) {
     case 'cli-server': // run as web-service
         define('DEBUG', 0);
         $params    = [
-            'date', 'date-format', 'latitude', 'longitude', 'city-id', 'cities', 'refresh'
+            'date', 'date-format', 'latitude', 'longitude', 'city-id', 'cities', 'refresh', 'search-city'
         ];
 
         // filter input variables
@@ -158,7 +158,7 @@ switch (php_sapi_name()) {
 // see https://secure.php.net/manual/en/function.getopt.php
 // : - required, :: - optional
 
-$options = getopt("hvdrt:", [
+$options = getopt("hvdrt:ef:", [
     'help', 'verbose', 'debug', 'test', 'date:', 'date-format:', 'echo',
     'dir:', 'filename:', 'filename:', 'refresh',
     'latitude:', 'longitude:', 'cities', 'city-id:', 'search-city:',
@@ -229,6 +229,7 @@ if (array_key_exists('h', $options) || array_key_exists('help', $options)) {
         "\t-t   --date={now}             (Optional) Date/time default 'now' see: https://secure.php.net/manual/en/function.strtotime.php",
         "\t     --dir=                   (Optional) Directory for storing files (sys_get_temp_dir() if not specified)",
         "\t-f,  --filename={output.}     (Optional) Filename for output data from operation",
+        "\t     --date-format={U}        (Optional) Format to output, using date(), default unixtime, see: https://secure.php.net/manual/en/function.date.php",
         "\t     --format={json}          (Optional) Output format for output filename (reserved for future): json (default)",
     ]);
 
